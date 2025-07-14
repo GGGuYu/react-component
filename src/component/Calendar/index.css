@@ -27,3 +27,9 @@
   background-color: #ccc;
   cursor: pointer;
 }
+
+.day:hover, .selected {
+  background-color: #ccc;
+  cursor: pointer;
+}
+
