@@ -14,7 +14,15 @@ function Calendar(props:CalendarProps) {
     //先要一个响应式变量存当前选择的日期，默认肯定是今天
     const [date , setDate] = useState<Date>(defaultDate);
     
-    //根据当前的日期，计算后面的html有多少天，day和empty,所以要写这个逻辑
+    //点击日期的小盒子div,更新date的函数，先定义后使用
+    const changeDateOnClickDiv = (year:number , month:number, date:number) => {
+      const newDate:Date = new Date(year , month , date);
+      setDate(newDate);
+      onChange?.(newDate);
+    }
+
+    //根据当前的日期渲染布局，计算后面的html有多少天，day和empty,所以要写这个逻辑
+    //这样我就只需要改变date,我就可以及时的渲染了，我的逻辑就都在改变date上
     const renderDaysLayout = (date:Date) => {
         const result = []
         
@@ -29,10 +37,10 @@ function Calendar(props:CalendarProps) {
         for(let i = 0;i < firstday;i++){
             result.push(<div key={`empty-${i}`} className="empty"></div>)
         }
-        //生产所有的day
+        //生产所有的day , 注意，day元素可以点击，点击修改date
         for(let i = 1; i <= days;i++){
-            const div = <div key={i} className="day">{i}</div>;
-            const divSelected = <div key={i} className="day selected">{i}</div>;
+            const div = <div key={i} className="day" onClick={()=>changeDateOnClickDiv(date.getFullYear(),date.getMonth(),i)}>{i}</div>;
+            const divSelected = <div key={i} className="day selected" onClick={()=>changeDateOnClickDiv(date.getFullYear(),date.getMonth(),i)}>{i}</div>;
             if(i == date.getDate()) {
               result.push(divSelected)
             } else {
