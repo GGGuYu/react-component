@@ -1,19 +1,38 @@
-import { useState } from 'react';
+import React, { useImperativeHandle, useState } from 'react';
 import './index.css';
 
+//P 参数
 interface CalendarProps {
   defaultDate?:Date ,
   onChange?:(date:Date) => void
 }
 
-function Calendar(props:CalendarProps) {
+//T 自定义引用类型
+interface CalendarRef {
+  getDate:() => Date,
+  setDate:(date:Date) => void,
+}
+
+const Calendar:React.ForwardRefRenderFunction<CalendarRef,CalendarProps> = (props:CalendarProps , ref) => {
     const {
       defaultDate = new Date(), //这样可以写一个[默认值]，如果没有被解构出来
       onChange,
     } = props;
     //先要一个响应式变量存当前选择的日期，默认肯定是今天
     const [date , setDate] = useState<Date>(defaultDate);
-    
+    //把ref这个引用自定义成CalendarRef
+    useImperativeHandle(ref , () => {
+      return {
+        getDate:() => date,
+        setDate:(newDate:Date) => {
+          setDate((date) => {
+            console.log(`正在更新olddate:${date}为新的调用方插入的date:${newDate}`);
+            return newDate;
+          }); 
+        },
+      }
+    });
+
     //点击日期的小盒子div,更新date的函数，先定义后使用
     const changeDateOnClickDiv = (year:number , month:number, date:number) => {
       const newDate:Date = new Date(year , month , date);
@@ -89,3 +108,4 @@ function Calendar(props:CalendarProps) {
 }
 
 export default Calendar;
+export type { CalendarRef };
