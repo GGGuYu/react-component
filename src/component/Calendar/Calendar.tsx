@@ -1,9 +1,11 @@
-import React, { useImperativeHandle, useState } from 'react';
+import React, { useImperativeHandle } from 'react';
 import './index.css';
+import { useControllableValue } from 'ahooks';
 
 //P 参数
 interface CalendarProps {
-  defaultDate?:Date ,
+  value?:Date,
+  defaultValue?:Date ,
   onChange?:(date:Date) => void
 }
 
@@ -14,12 +16,18 @@ interface CalendarRef {
 }
 
 const Calendar:React.ForwardRefRenderFunction<CalendarRef,CalendarProps> = (props:CalendarProps , ref) => {
-    const {
-      defaultDate = new Date(), //这样可以写一个[默认值]，如果没有被解构出来
-      onChange,
-    } = props;
+    // const {
+    //   value:PropsValue,
+    //   defaultValue = new Date(), //这样可以写一个[默认值]，如果没有被解构出来
+    //   onChange,
+    // } = props; //不需要解构了，因为我用useControllableValue自定义hook
+
     //先要一个响应式变量存当前选择的日期，默认肯定是今天
-    const [date , setDate] = useState<Date>(defaultDate);
+    //useControllableValue支持受控和非受控，并且改变的时候自动调用onChange,我不用手动调用
+    const [date , setDate] = useControllableValue<Date>(props , {
+      defaultValue: new Date(), //超级默认
+    });
+
     //把ref这个引用自定义成CalendarRef
     useImperativeHandle(ref , () => {
       return {
@@ -37,7 +45,6 @@ const Calendar:React.ForwardRefRenderFunction<CalendarRef,CalendarProps> = (prop
     const changeDateOnClickDiv = (year:number , month:number, date:number) => {
       const newDate:Date = new Date(year , month , date);
       setDate(newDate);
-      onChange?.(newDate);
     }
 
     //根据当前的日期渲染布局，计算后面的html有多少天，day和empty,所以要写这个逻辑
@@ -76,13 +83,11 @@ const Calendar:React.ForwardRefRenderFunction<CalendarRef,CalendarProps> = (prop
     //点击上一个月按钮，会切换到上个月的第一天
     const handlePrevMonth = () => {
       const newDate:Date = new Date(date.getFullYear() , date.getMonth()-1 , 1);
-      onChange?.(newDate ?? new Date());
       setDate(newDate);
     }
 
     const handleNextMonth = () => setDate((date) => {
         const newDate = new Date(date.getFullYear() , date.getMonth()+1 , 1);
-        onChange?.(newDate);
         return newDate;
     })
 
