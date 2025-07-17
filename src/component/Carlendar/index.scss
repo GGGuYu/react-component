@@ -82,11 +82,25 @@
         &-cell {
             flex: 1;
             border: 1px solid #eee;
-            padding: 10px;
+            // padding: 10px;
             box-sizing: border-box;
             color: #ccc;
+            overflow: hidden; //超过隐藏
             &-current {
                 color: #000;
+            }
+            &-date{
+                padding: 10px;
+                &-selected {
+                    background: blue;
+                    width: 28px;
+                    height: 28px;
+                    line-height: 28px;
+                    text-align: center;
+                    color: #fff;
+                    border-radius: 50%;
+                    cursor: pointer;
+                }
             }
         }
 
